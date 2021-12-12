@@ -38,7 +38,7 @@ exports.getAll = async (req, res) => {
 
     res.send(tasks);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };
 
@@ -49,12 +49,12 @@ exports.getById = async (req, res) => {
     // const task = await Task.findById(_id);
     const task = await Task.findOne({ _id, owner: req.user._id });
     if (!task) {
-      return res.status(404).send("Task not found");
+      return res.status(404).send({ error: "Task not found" });
     }
 
     res.send(task);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };
 
@@ -64,7 +64,7 @@ exports.create = async (req, res) => {
     await task.save();
     res.status(201).send(task);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };
 
@@ -90,12 +90,12 @@ exports.update = async (req, res) => {
     );
 
     if (!task) {
-      return res.status(404).send("Task not found");
+      return res.status(404).send({ error: "Task not found" });
     }
 
     res.send(task);
   } catch (e) {
-    res.status(400).send(e.message);
+    res.status(400).send({ error: e.message });
   }
 };
 
@@ -106,11 +106,11 @@ exports.delete = async (req, res) => {
       owner: req.user._id,
     });
     if (!task) {
-      return res.status(404).send("Task not found");
+      return res.status(404).send({ error: "Task not found" });
     }
 
     res.send(task);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };

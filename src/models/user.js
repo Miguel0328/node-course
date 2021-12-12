@@ -51,6 +51,9 @@ const schema = new Schema(
         },
       },
     ],
+    avatar: {
+      type: Buffer,
+    },
   },
   {
     timestamps: true,
@@ -122,6 +125,7 @@ schema.methods.toJSON = function () {
 
   delete userObject.password;
   delete userObject.tokens;
+  delete userObject.avatar;
 
   return userObject;
 };

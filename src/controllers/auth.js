@@ -9,7 +9,7 @@ exports.login = async (req, res) => {
     const token = await user.generateAuthToken();
     res.send({ user, token });
   } catch (e) {
-    res.status(400).send(e.message);
+    res.status(400).send({ error: e.message });
   }
 };
 
@@ -22,7 +22,7 @@ exports.logout = async (req, res) => {
 
     res.send();
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };
 
@@ -33,6 +33,6 @@ exports.logoutAll = async (req, res) => {
 
     res.send();
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };

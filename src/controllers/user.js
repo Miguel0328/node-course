@@ -1,17 +1,31 @@
 const User = require("../models/user");
-const { update } = require("./task");
+const sharp = require("sharp");
 
 exports.getAll = async (req, res) => {
   try {
     const users = await User.find({});
     res.send(users);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };
 
 exports.getMe = async (req, res) => {
   res.send(req.user);
+};
+
+exports.getAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user || !user.avatar) {
+      throw new Error();
+    }
+
+    res.set("Content-Type", "image/png");
+    res.send(user.avatar);
+  } catch (e) {
+    res.status(400).send();
+  }
 };
 
 exports.getById = async (req, res) => {
@@ -20,12 +34,12 @@ exports.getById = async (req, res) => {
   try {
     const user = await User.findById(_id);
     if (!user) {
-      return res.status(404).send("User not found");
+      return res.status(404).send({ error: "User not found" });
     }
 
     res.send(user);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
   }
 };
 
@@ -36,7 +50,21 @@ exports.create = async (req, res) => {
     const token = await user.generateAuthToken();
     res.status(201).send({ user, token });
   } catch (e) {
-    res.status(400).send(e.message);
+    res.status(400).send({ error: e.message });
+  }
+};
+
+exports.uploadAvatar = async (req, res) => {
+  try {
+    const buffer = await sharp(req.file.buffer)
+      .resize({ width: 250, height: 250 })
+      .png()
+      .toBuffer();
+    req.user.avatar = buffer;
+    await req.user.save();
+    res.send();
+  } catch (e) {
+    res.status(500).send({ error: e.message });
   }
 };
 
@@ -65,7 +93,7 @@ exports.update = async (req, res) => {
 
     res.send(req.user);
   } catch (e) {
-    res.status(400).send(e.message);
+    res.status(400).send({ error: e.message });
   }
 };
 
@@ -79,6 +107,16 @@ exports.delete = async (req, res) => {
     await req.user.remove();
     res.send(req.user);
   } catch (e) {
-    res.status(500).send(e.message);
+    res.status(500).send({ error: e.message });
+  }
+};
+
+exports.deleteAvatar = async (req, res) => {
+  try {
+    req.user.avatar = undefined;
+    await req.user.save();
+    res.send();
+  } catch (e) {
+    res.status(500).send({ error: e.message });
   }
 };
