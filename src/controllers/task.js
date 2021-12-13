@@ -13,8 +13,8 @@ exports.getAll = async (req, res) => {
     sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
   }
 
-  const limit = parseInt(req.query.limit);
-  const page = parseInt(req.query.page);
+  const limit = parseInt(req.query.limit ?? "10");
+  const page = parseInt(req.query.page ?? "1");
 
   try {
     // await req.user
